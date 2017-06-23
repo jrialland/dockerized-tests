@@ -1,5 +1,10 @@
 package net.jr.dockerizedTest;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.DockerClient.ListContainersParam;
@@ -8,7 +13,9 @@ import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.ContainerInfo;
+import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.Image;
+import com.spotify.docker.client.messages.PortBinding;
 
 public abstract class DockerSupport {
 
@@ -94,5 +101,12 @@ public abstract class DockerSupport {
 
 	}
 
+	public static ContainerConfig.Builder exposePort(ContainerConfig.Builder configBuilder, int port) {
+		Map<String, List<PortBinding>> portBindings = new TreeMap<>();
+		portBindings.put(Integer.toString(port), Arrays.asList(PortBinding.randomPort("0.0.0.0")));
+		final HostConfig hostConfig = HostConfig.builder().portBindings(portBindings).build();
+		return configBuilder.hostConfig(hostConfig).exposedPorts(Integer.toString(port));
+	}
+	
 	public abstract ContainerConfig configure(ContainerConfig.Builder configBuilder);
 }
