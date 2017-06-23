@@ -5,11 +5,12 @@
 
 Run real server applications during unit tests by using docker -
 
-Supported :
+You can instanciate the following servers :
 
--Mysql 5.7.18
--Redis 3.0.7
--MemCached 1.4.37
+* Mysql 5.7.18
+* Postgresql 9.1
+* Redis 3.0.7
+* MemCached 1.4.37
 
 MySql example : 
 
