@@ -51,6 +51,7 @@ public class BaseServer implements Server {
 			} catch (Exception e) {
 				LOGGER.info("\t-> failure");
 				if (getDockerSupport().isExited()) {
+					System.out.println(dockerSupport.getLogs());
 					throw new IllegalStateException("docker container has exited !");
 				} else {
 					try {

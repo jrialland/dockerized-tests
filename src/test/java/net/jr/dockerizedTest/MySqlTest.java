@@ -32,7 +32,6 @@ public class MySqlTest {
 		String dbVersion = cnx.getMetaData().getDatabaseProductVersion();
 		cnx.close();
 		Assert.assertEquals(MySqlServer.MYSQL_VERSION, dbVersion);		
-
 		mysqlServer.createDb("TEST_DB");
 		cnx = DriverManager.getConnection(mysqlServer.getJdbcUrl("TEST_DB"), "root", mysqlServer.getRootPassword());
 		cnx.createStatement()

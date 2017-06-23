@@ -7,8 +7,10 @@ import java.util.TreeMap;
 
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.DockerClient.AttachParameter;
 import com.spotify.docker.client.DockerClient.ListContainersParam;
 import com.spotify.docker.client.DockerClient.ListImagesParam;
+import com.spotify.docker.client.LogStream;
 import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerCreation;
@@ -51,9 +53,7 @@ public abstract class DockerSupport {
 
 			final ContainerConfig.Builder configBuilder = ContainerConfig.builder().image(image);
 			final ContainerCreation creation = docker.createContainer(configure(configBuilder));
-
 			containerId = creation.id();
-
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -107,6 +107,17 @@ public abstract class DockerSupport {
 		final HostConfig hostConfig = HostConfig.builder().portBindings(portBindings).build();
 		return configBuilder.hostConfig(hostConfig).exposedPorts(Integer.toString(port));
 	}
-	
+
+	public String getLogs() {
+		final String logs;
+		try (LogStream stream = docker.attachContainer(containerId, AttachParameter.LOGS, AttachParameter.STDOUT,
+				AttachParameter.STDERR, AttachParameter.STREAM)) {
+			logs = stream.readFully();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return logs;
+	}
+
 	public abstract ContainerConfig configure(ContainerConfig.Builder configBuilder);
 }

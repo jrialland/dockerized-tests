@@ -5,7 +5,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import com.spotify.docker.client.messages.ContainerConfig;
+import com.spotify.docker.client.messages.ContainerConfig.Builder;
+
 import net.jr.dockerizedTest.BaseServer;
+import net.jr.dockerizedTest.DockerSupport;
 
 public class MySqlServer extends BaseServer {
 
@@ -18,7 +22,15 @@ public class MySqlServer extends BaseServer {
 	private static final String MYSQL_ROOT_PASSWORD = "root_password";
 
 	public MySqlServer() {
-		super(IMAGE, MYSQL_DEFAULT_PORT);
+		super(new DockerSupport(IMAGE) {
+			
+			@Override
+			public ContainerConfig configure(Builder configBuilder) {
+				return exposePort(configBuilder, MYSQL_DEFAULT_PORT)
+						.env("MYSQL_ROOT_PASSWORD="+MYSQL_ROOT_PASSWORD)
+						.build();
+			}
+		});
 	}
 
 	@Override
