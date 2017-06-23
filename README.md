@@ -8,7 +8,7 @@ Supported :
 
 -Mysql 5.7.18
 -Redis 3.0.7
-
+-MemCached 1.4.37
 
 MySql example : 
 
