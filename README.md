@@ -2,7 +2,15 @@
 
 [![Build Status](https://travis-ci.org/jrialland/dockerized-tests.svg?branch=master)](https://travis-ci.org/jrialland/dockerized-tests)
 
-Run real server applications (supported : mysql, redis) during unit tests by using docker :
+Run real server applications during unit tests by using docker -
+
+Supported :
+
+-Mysql 5.7.18
+-Redis 3.0.7
+
+
+MySql example : 
 
 ```java
 

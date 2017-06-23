@@ -26,7 +26,7 @@ public class RedisTest {
 	@Test
 	public void connectionTest() throws Exception {
 		Jedis jedis = new Jedis("localhost", redisServer.getPort());
-		System.out.println("Server is running: " + jedis.ping());
+		System.out.println("Server is running: " + jedis.ping());		
 		jedis.close();
 	}
 
