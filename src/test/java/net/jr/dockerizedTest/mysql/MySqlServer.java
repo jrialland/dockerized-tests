@@ -24,14 +24,21 @@ import com.spotify.docker.client.messages.PortBinding;
 
 public class MySqlServer {
 
+  public static final String MYSQL_VERSION = "5.7.18";
+	
   private static final Logger LOGGER = LoggerFactory.getLogger(MySqlServer.class);
-
-  private static final String IMAGE = "mysql:5.5.51";
+  
+  private static final String IMAGE = "mysql:"+MYSQL_VERSION;
 
   private static final int MYSQL_DEFAULT_PORT = 3306;
 
   private static final String MYSQL_ROOT_PASSWORD = "root_password";
 
+  private static final int MAX_CONNECTION_ATTEMPTS = 20;
+  
+  private static final int DELAY_BETWEEN_ATTEMPTS_MS = 1000;
+  
+  
   private String containerId;
 
   private DockerClient docker;
@@ -78,19 +85,23 @@ public class MySqlServer {
       docker.startContainer(containerId);
       Connection cnx = null;
       LOGGER.info("Trying to obtain connection to mysql ...");
-      for (int i = 0; i < 20; i++) {
-        LOGGER.info("    Attempt " + (i + 1));
+      
+      String jdbcUrl = getJdbcUrl("mysql");
+      LOGGER.info("using jdbc url : " + jdbcUrl);
+      
+      for (int i = 0; i < MAX_CONNECTION_ATTEMPTS; i++) {
+        LOGGER.info("Connection attempt " + (i + 1) + "/"+MAX_CONNECTION_ATTEMPTS);
         try {
-          cnx = DriverManager.getConnection(getJdbcUrl("mysql"), "root", MYSQL_ROOT_PASSWORD);
-          LOGGER.info("     -> ok, Got connection  : " + cnx);
+          cnx = DriverManager.getConnection(jdbcUrl, "root", MYSQL_ROOT_PASSWORD);
+          LOGGER.info("\t-> ok, Got connection  : " + cnx);
           break;
         } catch (Exception e) {
-          LOGGER.info("     -> failure");
-          Thread.sleep(1000);
+          LOGGER.info("\t-> failure");
+          Thread.sleep(DELAY_BETWEEN_ATTEMPTS_MS);
         }
       }
       if (cnx == null) {
-        throw new IllegalStateException();
+        throw new IllegalStateException("Could not get a connection !");
       } else {
         stopped = false;
         cnx.close();
@@ -121,8 +132,8 @@ public class MySqlServer {
   public String getJdbcUrl(String dbName) {
     final String dbPath = dbName == null || dbName.trim().isEmpty() ? "" : "/" + dbName;
     try {
-      ContainerInfo info = docker.inspectContainer(containerId);
-      String hostPort = info.networkSettings().ports().get("3306").get(0).hostPort();
+		ContainerInfo info = docker.inspectContainer(containerId);
+		String hostPort = info.networkSettings().ports().values().stream().findFirst().get().get(0).hostPort();
       return "jdbc:mysql://127.0.0.1:" + hostPort + dbPath + "?useSSL=false";
     } catch (Exception e) {
       throw new RuntimeException(e);

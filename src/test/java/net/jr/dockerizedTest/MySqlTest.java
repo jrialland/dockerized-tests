@@ -32,7 +32,15 @@ public class MySqlTest {
     Connection cnx = DriverManager.getConnection(jdbcUrl, "root", mysqlServer.getRootPassword());
     Assert.assertNotNull(cnx);
     String dbVersion = cnx.getMetaData().getDatabaseProductVersion();
-    Assert.assertEquals("5.5.51", dbVersion);
+    cnx.close();
+    Assert.assertEquals(MySqlServer.MYSQL_VERSION, dbVersion);
+    
     mysqlServer.createDb("TEST_DB");
+    
+    
+    cnx = DriverManager.getConnection(mysqlServer.getJdbcUrl("TEST_DB"), "root", mysqlServer.getRootPassword());
+    
+    cnx.createStatement().execute("create table test_table(id int not null auto_increment, val varchar(10), primary key (id));");
+    
   }
 }
