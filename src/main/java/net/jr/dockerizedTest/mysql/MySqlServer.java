@@ -121,6 +121,10 @@ public class MySqlServer {
     }
   }
 
+  public Connection rootConnection() throws SQLException {
+	  return DriverManager.getConnection(getJdbcUrl("mysql"), "root", getRootPassword());
+  }
+  
   @Override
   protected void finalize() throws Throwable {
     if (!stopped) {
