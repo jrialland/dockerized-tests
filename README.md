@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/jrialland/dockerized-tests.svg?branch=master)](https://travis-ci.org/jrialland/dockerized-tests)
 [![jitpack.io](https://jitpack.io/v/jrialland/dockerized-tests.svg)](https://jitpack.io/#jrialland/dockerized-tests)
+[![LICENSE]](http://www.wtfpl.net/wp-content/uploads/2012/12/wtfpl-badge-2.png)](http://www.wtfpl.net)
 
 Run real server applications during unit tests by using docker -
 
