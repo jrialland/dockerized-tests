@@ -41,3 +41,12 @@ public class HowtoUse {
   }
 
 ```
+
+
+Testing:
+
+```
+export DOCKER_HOST=unix:///var/run/docker.sock
+mvn test
+```
+
